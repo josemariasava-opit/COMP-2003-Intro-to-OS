@@ -18,6 +18,7 @@ int validateNumber(char *pLine);
 
 int main(int argc, char *argv[]){
 
+    // pointer to FILE
     FILE *pFile; 
 
 
@@ -44,14 +45,14 @@ int main(int argc, char *argv[]){
     if(strchr(pFileName,'.') == NULL) { 
         // If no extension provided, append the default one as #define 
         size_t new_length = strlen(pFileName)+strlen(DEFAULT_EXTENSION)+1;
-        pFileName = realloc(pFileName,new_length);
-        strcat(pFileName, DEFAULT_EXTENSION);
+        pFileName = realloc(pFileName,new_length); // reallocate mmeory for the new lenght of pFileName
+        strcat(pFileName, DEFAULT_EXTENSION); // concatenate strings 
     }
 
     // Open the file --> read mode 
     pFile = fopen(pFileName,"r");
     /*
-    * Safety First 
+    * Safety First! 
     * Check if the pointer to file is NULL 
     */
     if(pFile == NULL){
@@ -77,9 +78,11 @@ int main(int argc, char *argv[]){
 
 
 /*
-* Argument of the function is the pointer to the file that has to be parsed
-* Reads the given file line by line, check the number with the function validateNumber()
-* comvert the string value in double and return the sum of numbers
+* Function name     :   calculateSum
+* Arguments         :   *pFile      = Pointer to File
+* Return values/s   :   sum         = sum of numbers inside the file        
+* Remarks           :   Read the file line by line, validate the number and convert it from string to float 
+*                       
 */
 double calculateSum(FILE *pFile){
     // Buffer to store each line 
@@ -90,7 +93,7 @@ double calculateSum(FILE *pFile){
     while(fgets(line,sizeof(line),pFile)){
         // Remove the /n char at the end of the line 
         line[strcspn(line,"\n")] = 0; 
-        //Check that the value of the new line is a number
+        //Check that the value of the new line is a number, if not does not execute the sum 
         if(validateNumber(line)){
             //convert the string to a number with atof() function and add to the var sum 
             sum += atof(line);
@@ -102,10 +105,12 @@ double calculateSum(FILE *pFile){
 }
 
 /*
-* Argument of the function is the pointer to the line of the file 
-* Check if the line contains a valid number (1.0 or -10)
-* use sscanf() to try parsing the line as number, if succeeds, the functions returns 1
-* so the line contains a valid number
+* Function name     :   validateNumber
+* Arguments         :   *pLine      = Pointer to a string
+* Return values/s   :   1-0         = 
+* Remarks           :   It uses sscanf(pLine, "%lf", &temp) to try reading a floating-point number (%lf means "read a double value").              
+*                       If sscanf successfully reads one number, it returns 1 (meaning the string is a valid number).
+*                       If it fails (e.g., the string contains letters or invalid characters), it returns 0.
 */
 int validateNumber(char *pLine){
 

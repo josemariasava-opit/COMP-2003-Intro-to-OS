@@ -3,14 +3,15 @@
 * function to find the median of an array of integers. The program should take an array and its
 * size as input, and return the median value of the integers.
 */
-#include <stdio.h>
-#include <stdlib.h>
+#include <stdio.h> // to handle standard I/O 
+#include <stdlib.h> // to handle dynamic memory allocation 
 
 // function  prototypes 
 void bubbleSort(int *pArray, int size);
 float findMedian(int *pArray, int size); 
 
 int main(){ 
+    // local vars
     int size; 
     int *pArray; 
 
@@ -46,7 +47,7 @@ int main(){
         if (scanf("%d", &pArray[i]) != 1) {
             printf("Error: Invalid input for array element.\n");
             free(pArray); // Free the allocated memory
-            return 1;   // Exit if input fails
+            return 1;   // Exit 
         }
     }
 
@@ -64,8 +65,12 @@ int main(){
 
 
 /*
-* Argument of the function are the pointer to the array and the size
-* BubbleSort compare the adjacent elements and swap them if they are in the wrong order
+* Function name     :   bubbleSort
+* Arguments         :   *pArray     = Pointer to Array
+*                       size        = size of the Array - number of elements 
+* Return values/s   :   --- 
+* Remarks           :   BubbleSort compare the adjacent elements of the array  and swap them if they are in the wrong order 
+*                       
 */
 void bubbleSort(int *pArray, int size){
     for(int i= 0; i<size-1; i++){
@@ -84,10 +89,13 @@ void bubbleSort(int *pArray, int size){
 }
 
 /*
-* Argument of the function is the pointer to the array and the size
-* the function sort the given array and checks the size. 
-* If odd the median is the element in the middle 
-* if even the median is the average of the two elements that are closest to the center 
+* Function name     :   findMedian
+* Arguments         :   *pArray     = Pointer to Array
+*                       size        = size of the Array - number of elements 
+* Return values/s   :   median value of the given Array  
+* Remarks           :   Sort the given array and checks the size.abort
+*                       If odd the median is the element in the middle 
+*                       if even the median is the average of the two elements that are closest to the center.                       
 */
 float findMedian(int *pArray, int size){ 
     /* 

@@ -15,8 +15,9 @@ int main(int argc, char *argv[]){
     int *pArray = NULL;
     int size = 0; 
 
+    // At leat one values is provided by command line
     if(argc < 2 ){
-        printf("Please provide integer values as command-line arguments to run this program \n"); 
+        printf("Usage: %s <Integer_values1> <Integer_values2> ...\n", argv[0]);
         return 1; 
     }
 
@@ -79,8 +80,12 @@ int main(int argc, char *argv[]){
 }
 
 /*
-* Argument of the function are the pointer to the array and the size
-* BubbleSort compare the adjacent elements and swap them if they are in the wrong order
+* Function name     :   bubbleSort
+* Arguments         :   *pArray     = Pointer to Array
+*                       size        = size of the Array - number of elements 
+* Return values/s   :   *pArray     = sorted array       
+* Remarks           :   BubbleSort compare the adjacent elements of the array  and swap them if they are in the wrong order 
+*                       
 */
 int* bubbleSort(int *pArray, int size){
     for(int i= 0; i<size-1; i++){
