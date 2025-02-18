@@ -12,37 +12,42 @@
 #include <errno.h>
 #include <time.h>
 
-// function  prototypes 
+/* function  prototypes */
 int* convertCommandArguments( int size, int *pBurst, char *argv[]);
 void scheduler(int count, int *pBurst);
 
 int main(int argc, char *argv[]){ 
-    // local vars
+    /* local vars */ 
     int *pBurstTime = NULL;
     int size = 0; 
 
-    // At least one burst time is provided by command-line 
+    /* At least one burst time is provided by command-line */
     if(argc < 2 ){
         printf("Usage: %s <burst_time1> <burst_time2> ...\n", argv[0]);
         return 1; 
     }
 
-    // size = number of command-line args
+    /* size = number of command-line args*/
     size = argc - 1;
-    // allocate memory for the array 
+    /* allocate memory for the array */
     pBurstTime = malloc(size * sizeof(int));        
-    // Safety first ! 
+    /* 
+    * Safety first!
+    * check correct memory allocation
+    */ 
     if (pBurstTime == NULL)
     {
         printf("Memory Allocation failed \n");
         return 1; 
     }
     
-    // calling functions
-    // convert from string to int values from command-line
+    /*
+    calling functions
+    *convert from string to int values from command-line
+    */
     convertCommandArguments(size,pBurstTime,argv);
 
-    // scheduler() calling
+    /* Calling scheduler*/
     scheduler(size, pBurstTime);
     
     free(pBurstTime);
@@ -97,17 +102,17 @@ int main(int argc, char *argv[]){
     *                       If it fails (e.g., the string contains letters or invalid characters), it returns 0.
     */
    void scheduler(int size, int *pBurst){
-    // local vars
+    /*local vars*/
     pid_t pid;
     int status; 
     pid_t childPid; 
-    double elapsedTime = 0.0; // Track the current time in simulation
+    double elapsedTime = 0.0; /*Track the current time in simulation*/
 
     time_t timeStart = time(NULL);
 
     printf("[Time %.2f] Scheduler starting execution \n", elapsedTime);
     
-    // First loop - create child process
+    /* First loop - create child process */
     for (int i = 0; i < size; i++)
     {
         /*Create a new child process*/
@@ -124,17 +129,17 @@ int main(int argc, char *argv[]){
             time_t processStart = time(NULL);
             printf("[Time %.2f] Child process: PID = %d, Burst Time = %d seconds \n", elapsedTime, getpid(), pBurst[i]);
 
-            // Simulate process execution using sleep
+            /* Simulate process execution using sleep*/
             sleep(pBurst[i]);
 
-            // Completetion time for this process 
+            /* Completetion time for this process */
             elapsedTime += pBurst[i];
             printf("[Time %.2f] Child process: PID = %d completed (Elapsed: %.2d seconds) \n",elapsedTime, getpid(), pBurst[i]);
 
             exit(EXIT_SUCCESS);
         }
         else {
-            // Parent process
+            /* Parent process*/
             printf("[Time %.2f] Parent: Created child process with PID = %d\n", elapsedTime, pid);
         }
         
@@ -142,14 +147,13 @@ int main(int argc, char *argv[]){
 
     elapsedTime = 0.0;
 
-    // Second loop - wait child process
+    /*Second loop - wait child process*/
     for (int i = 0; i < size; i++)
     {
         
         childPid = wait(&status);
         if (childPid < 0)
-        {
-            /* code */
+        { 
             perror("Wait failed"); 
             exit(EXIT_FAILURE);
         }
@@ -159,7 +163,7 @@ int main(int argc, char *argv[]){
         }
         
     }
-       // Calculate and display total execution time
+       /* Calculate and display total execution time*/
        time_t timeEnd = time(NULL);
        printf("[Time %.2f] Scheduler completed. Total execution time: %ld seconds\n",elapsedTime, (long)(timeEnd - timeStart));
        printf("Parent: All child processes have completed \n");

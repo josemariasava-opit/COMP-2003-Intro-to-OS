@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// function  prototypes 
+/* function  prototypes */
 int* bubbleSort(int *pArray, int size);
 
 
@@ -15,7 +15,7 @@ int main(int argc, char *argv[]){
     int *pArray = NULL;
     int size = 0; 
 
-    // At leat one values is provided by command line
+    /* At leat one values is provided by command line*/
     if(argc < 2 ){
         printf("Usage: %s <Integer_values1> <Integer_values2> ...\n", argv[0]);
         return 1; 
@@ -26,9 +26,10 @@ int main(int argc, char *argv[]){
     * argv[argc=0] is the program name itself
     */
     size  = argc - 1; 
-    // Allocation for the Array 
+    /* Allocate memory for the Array*/
     pArray = malloc(size * sizeof(int)); 
     
+    /* Check correct memory allocation*/
     if (pArray == NULL)
     {
         printf("Memory Allocation failed \n");
@@ -62,10 +63,10 @@ int main(int argc, char *argv[]){
         }
     }
 
-    // Sort the array calling the function bubbleSort()    
+    /* Sort the array calling the function bubbleSort() */
     bubbleSort(pArray,size); 
 
-    // loops the array and notify user with the sorted numbers. 
+    /* loops the array and notify user with the sorted numbers. */
     printf("Here the sorted numbers : ");
     for (int i = 0; i < size; i++)
     {
@@ -73,7 +74,7 @@ int main(int argc, char *argv[]){
     }
     printf("\n");
     
-    // Free the allocated memory
+    /* Free the allocated memory*/
     free(pArray);
 
     return 0; 
@@ -92,14 +93,14 @@ int* bubbleSort(int *pArray, int size){
         for (int j = 0; j < size -i -1; j++)
         {
             if(pArray[j]>pArray[j+1]){
-                // swap the value 
+                /* swap the value */
                 int temp = pArray[j];
                 pArray[j] = pArray[j+1];  
                 pArray[j+1] = temp; 
             }
-            // end of inner loop
+            /* end of inner loop */
         }
-    // end of outer loop 
+    /* end of outer loop  */ 
     }
 
     return pArray;

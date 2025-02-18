@@ -7,14 +7,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// function  prototypes 
+/* function  prototypes*/
 int* convertCommandArguments( int size, int *pBurst, char *argv[]);
 void processTimes(int size, int *pBurst, int *pWaiting, int *pTurnaround); 
 void printResults(int size, int *pBurst, int *pWaiting, int *pTurnaround);
 
 int main(int argc, char *argv[]){ 
 
-    // local vars
+    /* local vars*/
     int *pBurstTime = NULL;
     int *pWaitingTime = NULL; 
     int *pTurnaroundTime = NULL; 
@@ -22,36 +22,40 @@ int main(int argc, char *argv[]){
 
 
 
-    // At least one burst time is provided by command-line 
+    /* At least one burst time is provided by command-line */
     if(argc < 2 ){
         printf("Usage: %s <burst_time1> <burst_time2> ...\n", argv[0]);
         return 1; 
     }
 
-    // size = number of command-line args
+    /* size = number of command-line args*/
     size = argc - 1;
-    // allocate memory for each array 
+    /* allocate memory for each array */
     pBurstTime = malloc(size * sizeof(int));
     pWaitingTime = malloc(size * sizeof(int));
     pTurnaroundTime = malloc(size * sizeof(int)); 
     
-    // Safety first ! 
+    /*  
+    * Safety first !
+    */
     if (pBurstTime == NULL || pWaitingTime == NULL || pTurnaroundTime == NULL)
     {
         printf("Memory Allocation failed \n");
         return 1; 
     }
     
-    // calling functions
-    // convert from string to int values from command-line
+    /* 
+    * calling functions
+    * convert from string to int values from command-line
+    */
     convertCommandArguments(size,pBurstTime,argv);
-    // calculate times for each array 
+    /* calculate times for each array*/
     processTimes(size,pBurstTime,pWaitingTime,pTurnaroundTime);
-    // print the results 
+    /* print the results*/
     printResults(size,pBurstTime,pWaitingTime,pTurnaroundTime);
 
 
-    // Free the allocated memory
+    /* Free the allocated memory*/
     free(pBurstTime);
     free(pWaitingTime);
     free(pTurnaroundTime);

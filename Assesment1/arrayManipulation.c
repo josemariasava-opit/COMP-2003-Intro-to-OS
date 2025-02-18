@@ -6,12 +6,12 @@
 #include <stdio.h> // to handle standard I/O 
 #include <stdlib.h> // to handle dynamic memory allocation 
 
-// function  prototypes 
+/* function  prototypes */
 void bubbleSort(int *pArray, int size);
 float findMedian(int *pArray, int size); 
 
 int main(){ 
-    // local vars
+    /* local vars*/
     int size; 
     int *pArray; 
 
@@ -28,7 +28,7 @@ int main(){
     return 1; // exit the program 
      }
 
-    // Allocate memory for the array
+    /* Allocate memory for the array*/
     pArray = malloc(size * sizeof(int)); 
     /*
     * validate correct memory allocation for the array 
@@ -46,18 +46,18 @@ int main(){
     for (int i = 0; i < size; i++) {
         if (scanf("%d", &pArray[i]) != 1) {
             printf("Error: Invalid input for array element.\n");
-            free(pArray); // Free the allocated memory
-            return 1;   // Exit 
+            free(pArray); /*Free the allocated memory*/
+            return 1;   /* Exit */
         }
     }
 
-    // Call the findMedian() function and print the result
+    /*Call the findMedian() function and print the result*/
     float median = findMedian(pArray, size);
     if (median != -1) {
         printf("The median is: %.2f\n", median);
     }
 
-    // Free the allocated memory
+    /* Free the allocated memory*/
     free(pArray);
 
     return 0; 
@@ -104,19 +104,19 @@ float findMedian(int *pArray, int size){
     */
    if(pArray == NULL || size <=0){
     printf("Error! Invalid pointer to array or wrong size");
-    return 1; // exit the program 
+    return 1; /* exit the program */
    }
 
-   // Sort the array by calling the function bubbleSort()
+   /* Sort the array by calling the function bubbleSort()*/
    bubbleSort(pArray,size); 
 
-   // if the size is odd, return just the element in the middle 
+   /* if the size is odd, return just the element in the middle */
    if (size % 2 != 0){ 
     return pArray[size/2]; 
    }
    else
    {
-    // if the size is even, return the average of the two elements in the middle 
+    /*if the size is even, return the average of the two elements in the middle */
     return (pArray[(size/2) -1] + pArray[size/2]) / 2.0; 
    }
 }

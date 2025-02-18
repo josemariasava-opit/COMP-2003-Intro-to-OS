@@ -8,21 +8,21 @@
 #include <stdlib.h>
 #include <string.h>
 
-// assuming that the default extension for the file is .txt
+/* assuming that the default extension for the file is .txt */
 #define DEFAULT_EXTENSION ".txt"
 
-// function  prototypes 
+/* function  prototypes */
 double calculateSum(FILE *pFile);
 int validateNumber(char *pLine);
 
 
 int main(int argc, char *argv[]){
 
-    // pointer to FILE
+    /* pointer to FILE*/ 
     FILE *pFile; 
 
 
-    // Check if the file name is provided as command-line arg. 
+    /* Check if the file name is provided as command-line arg.*/
     if (argc !=2) {
         printf("Usage: %s <filename> \n", argv[0]);
         return 1; 
@@ -43,13 +43,13 @@ int main(int argc, char *argv[]){
     * strchr() searches for the first occurrence of a character in a string.
     */
     if(strchr(pFileName,'.') == NULL) { 
-        // If no extension provided, append the default one as #define 
+        /* If no extension provided, append the default one as #define */
         size_t new_length = strlen(pFileName)+strlen(DEFAULT_EXTENSION)+1;
-        pFileName = realloc(pFileName,new_length); // reallocate mmeory for the new lenght of pFileName
-        strcat(pFileName, DEFAULT_EXTENSION); // concatenate strings 
+        pFileName = realloc(pFileName,new_length); /*reallocate mmeory for the new lenght of pFileName */
+        strcat(pFileName, DEFAULT_EXTENSION); /* concatenate strings */
     }
 
-    // Open the file --> read mode 
+    /* Open the file --> read mode */
     pFile = fopen(pFileName,"r");
     /*
     * Safety First! 
@@ -60,7 +60,7 @@ int main(int argc, char *argv[]){
         * Notify error with a description using the function perror() 
         */
         perror("Erorr opening file");
-        // free the dynamically allocated memory for the pointer to fileName
+        /* free the dynamically allocated memory for the pointer to fileName*/
         free(pFileName); 
         return 1; 
     }
@@ -70,7 +70,7 @@ int main(int argc, char *argv[]){
     */
     printf("The sum of the numbers is: %.2f \n", calculateSum(pFile));
 
-    // Close the file 
+    /* Close the file */
     fclose(pFile);
 
     return 0; 
