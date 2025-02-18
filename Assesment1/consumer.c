@@ -40,10 +40,8 @@ int main(){
         exit(1);
     }
 
-    /* 
-    *  create semaphore if does not exist with IPC_CREAT
-    */
-    semid = semget((key_t)SEM_KEY, 1, 0666);
+
+    semid = semget((key_t)SEM_KEY, 1, FLAG);
     if (semid == -1) {
           perror("semget failed");
           exit(1);
