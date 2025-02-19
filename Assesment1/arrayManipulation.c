@@ -15,9 +15,9 @@ int main(){
     int size; 
     int *pArray; 
 
-    /*
-    * Ask the user to input the size of the array - n of elements 
-    */
+   /*
+   * Ask the user to input the size of the array - n of elements 
+   */
    printf("Enter the size of the array :"); 
    scanf("%d", &size);
    /*
