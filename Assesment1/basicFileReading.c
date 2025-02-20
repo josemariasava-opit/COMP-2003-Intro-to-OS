@@ -45,7 +45,7 @@ int main(int argc, char *argv[]){
     if(strchr(pFileName,'.') == NULL) { 
         /* If no extension provided, append the default one as #define */
         size_t new_length = strlen(pFileName)+strlen(DEFAULT_EXTENSION)+1;
-        pFileName = realloc(pFileName,new_length); /*reallocate mmeory for the new lenght of pFileName */
+        pFileName = realloc(pFileName,new_length); /*reallocate memory for the new lenght of pFileName */
         strcat(pFileName, DEFAULT_EXTENSION); /* concatenate strings */
     }
 

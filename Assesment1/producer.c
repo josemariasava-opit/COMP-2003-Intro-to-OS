@@ -77,8 +77,6 @@ int main(){
 
 }
 
-
-
 /*
 * Function name     :   semaphore_op
 * Arguments         :   semid            = Semaphore identifier obtained from semget()

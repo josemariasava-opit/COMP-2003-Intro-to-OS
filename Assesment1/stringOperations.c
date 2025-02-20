@@ -62,7 +62,7 @@ char* concatenateString(char *pString1, char *pString2){
     /* Allocate memory for the new string ( total size: len1 + len2 + 1)*/
     pStringResult = malloc(total * sizeof(char)); 
     if (pStringResult== NULL){ 
-        printf("Memory allocation error for new string. \n"); // notify if memory allocation fail
+        printf("Memory allocation error for new string. \n"); /* notify if memory allocation fail */ 
         return NULL;
     }
 

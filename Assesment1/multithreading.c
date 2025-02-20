@@ -71,8 +71,8 @@ int main(){
 
     totalSum = firstData.sum + secondData.sum; 
 
-    printf("Sum of first halve is : %d \n", firstData.sum); 
-    printf("Sum of second halve is : %d \n", secondData.sum); 
+    printf("Sum of first half is : %d \n", firstData.sum); 
+    printf("Sum of second half is : %d \n", secondData.sum); 
 
     printf("Total sum is: %d \n", totalSum); 
 

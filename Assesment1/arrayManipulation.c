@@ -93,7 +93,7 @@ void bubbleSort(int *pArray, int size){
 * Arguments         :   *pArray     = Pointer to Array
 *                       size        = size of the Array - number of elements 
 * Return values/s   :   median value of the given Array  
-* Remarks           :   Sort the given array and checks the size.abort
+* Remarks           :   Sort the given array and checks the size
 *                       If odd the median is the element in the middle 
 *                       if even the median is the average of the two elements that are closest to the center.                       
 */
