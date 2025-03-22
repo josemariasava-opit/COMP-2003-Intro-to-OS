@@ -18,17 +18,16 @@
 #include <unistd.h>
 #include <string.h>
 
+/* DEFINE */
 #define BRIDGE_FREE -1 
 #define NORTH_DIR true 
 #define SOUTH_DIR false 
 #define MAX_CROSSING 10
 
 /*
- * Struct to represent the Bridge.
- * (Note: We now store the waiting counters only for reporting purposes.
+ *  Struct to represent the Bridge.
  *  The key field is currentDirection, which will be reset to BRIDGE_FREE after
- *  every crossing. This lets the next waiting farmer, regardless of direction,
- *  claim the bridge.)
+ *  every crossing.
  */
 typedef struct {
     sem_t *semBridge;       /* Semaphore to control access to the bridge */
@@ -151,7 +150,7 @@ void waitBridge(farmerData *data, int *waitedTime){
         printError("sem_wait mutex in waitBridge()");
     }
     
-    /* (Optional) Update waiting counter for stats */
+    /* Update waiting counter for stats */
     if (data->directionFlag)
         pBridge->waitingNorthSide++;
     else
@@ -172,7 +171,7 @@ void waitBridge(farmerData *data, int *waitedTime){
     /* Claim the bridge by setting currentDirection to the farmer's direction */
     pBridge->currentDirection = data->directionFlag; 
 
-    /* (Optional) Decrement waiting counter since the farmer is now crossing */
+    /* Decrement waiting counter since the farmer is now crossing */
     if (data->directionFlag)
         pBridge->waitingNorthSide--;
     else
@@ -199,7 +198,7 @@ void crossBridge(farmerData *data, int waitedTime){
         printError("sem_wait semBridge in crossBridge()");
     }
 
-    /* Print a message and simulate crossing time (1-3 seconds) */
+    /* Print a message and simulate crossing time (1-3 seconds simulation of crossing ) */
     printf("Farmer %d (%sbound) is crossing the bridge. Waited approx. %d seconds\n",
            data->farmerID, data->directionFlag ? "North" : "South", waitedTime);
     
