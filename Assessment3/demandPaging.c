@@ -7,10 +7,6 @@
 
 /* 
 * pages are loaded into memory only when needed! 
-* [] Page table - virtual pages 
-* [] Frames - simulation with array ? 
-* [] Replace page - function 
-* [] Fault page handling - function 
 */
 
 #include <stdio.h>
