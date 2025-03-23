@@ -25,14 +25,14 @@ typedef struct
     char name[20];
     int totalRecords;
     int recordSize; 
-
 } virtualDisk;
 
 
 /* Function prototypes */
-void initDisk(virtualDisk* disk); 
+void initDisk(virtualDisk* disk, int flagInit); 
 void writeRecord(virtualDisk* disk, int record, char *data); 
 void readRecord(virtualDisk* disk, int record); 
+int isValidRecord(virtualDisk* disk, int record); 
 
 
 int main(){
@@ -41,10 +41,9 @@ int main(){
     int choice, track; 
     char dataRecord[RECORD_SIZE]; 
 
-    printf("Mass Storage Simulation \n"
-           "Init of the virtual disk...\n"
-    );
-    initDisk(&massStorage); 
+    printf("Mass Storage Simulation \n");
+    /* call initDisk() with flag 0 and do not force formatting */
+    initDisk(&massStorage, 0); 
 
 
     while (1)
@@ -62,16 +61,18 @@ int main(){
             while (getchar() != '\n') /* clean the buffer*/
             continue;
         }
-        
-
 
         switch (choice)
         {
+        /* validate record with isValidRecord() and then calling writeRecord() to avoid error */ 
         case 1:
-            printf("Enter the track number to write into disk (0-%d)",massStorage.totalRecords-1);
-            scanf("%d", &track); 
-            /* Clean the newline */
-            getchar(); 
+            do
+            {
+                printf("Enter the track number to write into disk (0-%d) ",massStorage.totalRecords-1);
+                scanf("%d", &track); 
+                getchar(); /* Clean the newline */
+            } while (!isValidRecord(&massStorage, track));
+
             /* Ask user for input data */
             printf("Enter data to write (max number of char: %d) ", massStorage.recordSize-1);
             fgets(dataRecord,massStorage.recordSize,stdin);
@@ -79,13 +80,20 @@ int main(){
             dataRecord[strcspn(dataRecord,"\n")] = 0; 
             writeRecord(&massStorage, track, dataRecord); 
             break;
+        /* validate record with isValidRecord() and then calling readRecord() to avoid error */ 
         case 2:
-            printf("Enter the track number to read from disk (0-%d)", massStorage.totalRecords-1); 
-            scanf("%d", &track); 
+            do
+            {
+                printf("Enter the track number to read from disk (0-%d) ", massStorage.totalRecords-1); 
+                scanf("%d", &track); 
+                getchar();  /* Clean the newline */
+            } while (!isValidRecord(&massStorage, track));
             readRecord(&massStorage,track); 
             break;
+        /* Calling initDisk() with flag 1 and format all disk */
         case 3:
-            initDisk(&massStorage); 
+            printf("Reinitializing virtual disk...\n");
+            initDisk(&massStorage,1);
             break;
         case 4: 
             printf("Exiting the program...\n"); 
@@ -102,16 +110,51 @@ int main(){
 /*
 * Function name     : initDisk
 * Arguments         : virtualDisk*   = Pointer to the virtual disk data structure
+*                     flagInit       = Integer values, used to manage the init condition 
 * Return value/s    : void           = does not return any value.
 * Remarks           : Initializes the data structure of the virtual disk, creates the disk file, 
 *                     and fills it with empty records. If the file creation fails, an error message is displayed. 
 */
-void initDisk(virtualDisk* disk){
+void initDisk(virtualDisk* disk, int flagInit){
 
     /* Init disk structure */
     strcpy(disk->name, FILE_NAME); 
     disk->totalRecords = TOTAL_RECORDS; 
     disk->recordSize = RECORD_SIZE; 
+
+    /* Check if virtual_disk.bin exists in the folder */
+    disk->pFile = fopen(disk->name, READ_BIN); 
+
+    if (disk->pFile && !flagInit)
+    {
+        /* Move to the end of file to check the size */
+        fseek(disk->pFile,0,SEEK_END);
+        long fileSize = ftell(disk->pFile); 
+        /* Always close the file after operation  */
+        fclose(disk->pFile); 
+
+        if (fileSize>0)
+        {
+            printf("Virtual Disk %s already exist and contains data \n", disk->name); 
+            return; 
+        }
+        else
+        {
+            printf("Virtual disk %s exists but is empty. Reinitializing... \n", disk->name); 
+        }
+    } 
+    /* Format disk from user choice */
+    else if (disk->pFile && flagInit)
+    {
+        fclose(disk->pFile); 
+        printf("Formatting the virtual disk %s...\n", disk->name); 
+    }
+    /* Cannot read the file -> the file does not exist */
+    else
+    {
+        printf("Virtual disk %s does not exist. Creating a new one...\n", disk->name);
+    }
+
 
     disk->pFile = fopen(disk->name,WRITE_BIN); 
 
@@ -130,7 +173,7 @@ void initDisk(virtualDisk* disk){
         fwrite(emptyData, sizeof(char), RECORD_SIZE, disk->pFile); 
     }
 
-    printf("Virtual Disk %s initialized \n", disk->name); 
+    printf("Virtual Disk %s initialized with %d empty tracks\n", disk->name, disk->totalRecords); 
 
     /* Always close the file after operation */
     fclose(disk->pFile); 
@@ -229,3 +272,14 @@ void readRecord(virtualDisk* disk, int record){
     fclose(disk->pFile);
 }
 
+int isValidRecord(virtualDisk* disk,int record){
+
+    if (record <0 || record>disk->totalRecords-1)
+    {
+        printf("Wrong track requested. Virtual disk goes from track 0 to track %d\n ", disk->totalRecords-1);
+        return 0; 
+    }
+    
+    return 1; 
+
+}

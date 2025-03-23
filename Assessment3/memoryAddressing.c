@@ -12,7 +12,7 @@
 /* 
 *
 * Page size -> 4KB (4096 bytes == 2^12 bytes)
-* the page size is 12 bit, so we need al 12 bit to represent all possible offset within a page ( 0 - 4096 )
+* the page size is 12 bit, so we need all 12 bit to represent all possible offset within a page ( 0 - 4096 )
 * for the page number, we need to remove the lower 12 bits from address wth shift operation >> 12 
 */
 
