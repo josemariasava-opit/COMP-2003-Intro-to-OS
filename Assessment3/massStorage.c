@@ -33,7 +33,6 @@ typedef struct
 void initDisk(virtualDisk* disk); 
 void writeRecord(virtualDisk* disk, int record, char *data); 
 void readRecord(virtualDisk* disk, int record); 
-int isDecimal(const char *str);
 
 
 int main(){
