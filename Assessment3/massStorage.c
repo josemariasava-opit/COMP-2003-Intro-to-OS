@@ -64,7 +64,7 @@ int main(){
 
         switch (choice)
         {
-        /* validate record with isValidRecord() and then calling writeRecord() to avoid error */ 
+        /* validate record with isValidRecord() and then calling writeRecord() to avoid error with file handling */ 
         case 1:
             do
             {
@@ -80,7 +80,7 @@ int main(){
             dataRecord[strcspn(dataRecord,"\n")] = 0; 
             writeRecord(&massStorage, track, dataRecord); 
             break;
-        /* validate record with isValidRecord() and then calling readRecord() to avoid error */ 
+        /* validate record with isValidRecord() and then calling readRecord() to avoid error with file handling */ 
         case 2:
             do
             {
@@ -114,6 +114,8 @@ int main(){
 * Return value/s    : void           = does not return any value.
 * Remarks           : Initializes the data structure of the virtual disk, creates the disk file, 
 *                     and fills it with empty records. If the file creation fails, an error message is displayed. 
+*                     With flagInit the init of the file is handle deeply, if the file already exist and is not empty we keep the data inside. 
+*                     if is empty we initialize it with 0 
 */
 void initDisk(virtualDisk* disk, int flagInit){
 
@@ -267,7 +269,6 @@ void readRecord(virtualDisk* disk, int record){
 
     /* Notify ! */
     printf("Data read from track %d -> %s \n", record, buffer); 
-
     /* Always close the file after operation */
     fclose(disk->pFile);
 }
