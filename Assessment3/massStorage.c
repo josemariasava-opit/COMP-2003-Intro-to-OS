@@ -163,8 +163,8 @@ void initDisk(virtualDisk* disk, int flagInit){
         printf("Virtual disk %s does not exist. Creating a new one...\n", disk->name);
     }
 
-
-    disk->pFile = fopen(disk->name,WRITE_BIN); 
+    /* In case of init use w+b to avoid segmentation fault and error: no such file or directory */
+    disk->pFile = fopen(disk->name,"w+b"); 
 
     /* Check result from fopen() */
     if (!disk->pFile)

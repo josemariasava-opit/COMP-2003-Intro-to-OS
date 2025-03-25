@@ -11,10 +11,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 /* DEFINE */
 #define FILE_NAME "example.txt"
 #define DATA_SIZE 1024
+#define WRITE "w"
+#define READ "r"
 
 typedef struct 
 {
@@ -68,18 +71,9 @@ int main(){
         case 2: 
             readFromFile(&myFile);
             break; 
-        /* Exit the program and destroy the file */
+        /* Exit the program */
         case 3: 
             printf("Exiting the program...\n"); 
-            if (!remove(myFile.name))
-            {
-                printf("File deleted successfully before exit. \n");
-            }
-            else
-            {
-                printf("File %s is not present\n", myFile.name); 
-            }
-            
             exit(0); 
         default:
             printf("Select a valud value from menù \n"); 
@@ -104,18 +98,51 @@ void initFile(basicFile* myFile){
 
     /* Init file structure */
     strcpy(myFile->name, FILE_NAME); 
-    myFile->pFile = fopen(myFile->name,"w"); 
+    myFile->pFile = fopen(myFile->name,READ); 
 
-    if (!myFile->pFile)
+    /* Check if file already exists */
+    if (myFile->pFile)
     {
-        printf("Error opening file");
-        return; 
-    }
+        char choice; 
+        /* Notify ! */
+        printf("File '%s' already exists. Do you want to reinitialize it? (y/n)",myFile->name); 
+        scanf("%c", &choice); 
+        getchar(); /* Clear the new line*/
 
-    /* Notify ! */
-    printf("File %s created successfully.\n", myFile->name);
-    /* Always close the file after operation */
-    fclose(myFile->pFile); 
+        if (tolower(choice) == 'y')
+        {
+            myFile->pFile = fopen(myFile->name,WRITE); /* Re-init file */
+            if (!myFile->pFile)
+            {
+                /* Notify ! */
+                perror("Error reinitializing the file\n"); 
+                return; 
+            }
+            /* Notify ! */
+            printf("File '%s' has been reinitialized\n", myFile->name); 
+            /* Always close the file after operation */
+            fclose(myFile->pFile); 
+        } else
+        {
+            /* Notify ! */
+            printf("Using existing file \n"); 
+        }
+    }
+    else
+    {
+        /* Create the file if does not exist */
+        myFile->pFile = fopen(myFile->name, WRITE); 
+        if (!myFile->pFile)
+        {
+            /* Notify ! */
+            perror("Error creating the file\n"); 
+            return; 
+        }
+        /* Notify ! */
+        printf("File %s created successfully.\n", myFile->name);
+        /* Always close the file after operation */
+        fclose(myFile->pFile); 
+    }
 }
 
 /*
@@ -141,7 +168,6 @@ void appendToFile(basicFile* myFile, char *data){
     /* Append new line char for correct separation of data */
     fputs("\n", myFile->pFile);   
     printf("Datta appended to file successfully\n"); 
-
     /* Always close the file after operation */
     fclose(myFile->pFile); 
 }
@@ -156,7 +182,7 @@ void appendToFile(basicFile* myFile, char *data){
 void readFromFile(basicFile* myFile){
     
     char buffer[DATA_SIZE];
-    myFile->pFile = fopen(myFile->name, "r"); 
+    myFile->pFile = fopen(myFile->name, READ); 
 
     if (!myFile->pFile)
     {
