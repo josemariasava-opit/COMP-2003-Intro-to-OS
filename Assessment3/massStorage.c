@@ -15,7 +15,7 @@
 #define FILE_NAME "virtual_disk.bin"
 #define RECORD_SIZE 256 /* each records can holds 256 bytes */
 #define TOTAL_RECORDS 90 /* Virtual Disc contains 90 records max */
-#define WRITE_BIN "wb"
+#define WRITE_BIN "r+b" /* reads and writes without truncating the file */
 #define READ_BIN "rb"
 
 /* Struc for representing the disk */
@@ -33,7 +33,8 @@ void initDisk(virtualDisk* disk, int flagInit);
 void writeRecord(virtualDisk* disk, int record, char *data); 
 void readRecord(virtualDisk* disk, int record); 
 int isValidRecord(virtualDisk* disk, int record); 
-
+int isTrackEmpty(virtualDisk* disk, int record);
+void checkDiskInfo(virtualDisk* disk);
 
 int main(){
     /* Local vars */
@@ -52,7 +53,8 @@ int main(){
                 "1 : Write data into disk \n"
                 "2 : Read data from disk \n"
                 "3 : Format disk and init values \n" 
-                "4 : Exit \n"
+                "4 : Check disk info \n"
+                "5 : Exit \n"
                 "Choose an option: \n"
             );
         if (scanf("%d", &choice) != 1)
@@ -95,9 +97,14 @@ int main(){
             printf("Reinitializing virtual disk...\n");
             initDisk(&massStorage,1);
             break;
+        /* Calling checkDiskInfo() */
         case 4: 
+            checkDiskInfo(&massStorage);
+            break; 
+        case 5: 
             printf("Exiting the program...\n"); 
             exit(0); 
+            break;
         default:
             printf("\nSelect one of the possible operation from menù \n");
             break;
@@ -123,7 +130,6 @@ void initDisk(virtualDisk* disk, int flagInit){
     strcpy(disk->name, FILE_NAME); 
     disk->totalRecords = TOTAL_RECORDS; 
     disk->recordSize = RECORD_SIZE; 
-
     /* Check if virtual_disk.bin exists in the folder */
     disk->pFile = fopen(disk->name, READ_BIN); 
 
@@ -174,9 +180,8 @@ void initDisk(virtualDisk* disk, int flagInit){
     {
         fwrite(emptyData, sizeof(char), RECORD_SIZE, disk->pFile); 
     }
-
+    /* Notify !*/
     printf("Virtual Disk %s initialized with %d empty tracks\n", disk->name, disk->totalRecords); 
-
     /* Always close the file after operation */
     fclose(disk->pFile); 
 }
@@ -192,6 +197,19 @@ void initDisk(virtualDisk* disk, int flagInit){
 */
 void writeRecord(virtualDisk* disk, int record, char *data){
 
+    /* Check if the track is empty */
+    if (!isTrackEmpty(disk, record)) {
+        char choice;
+        printf("Track %d already contains data. Overwrite? (y/n): ", record);
+        scanf(" %c", &choice);
+        getchar(); /* Clear newline */
+
+        if (tolower(choice) != 'y') {
+            printf("Write operation canceled.\n");
+            return;
+        }
+    }
+
     disk->pFile = fopen(disk->name, WRITE_BIN); 
 
     /* Check result from fopen() */
@@ -202,17 +220,8 @@ void writeRecord(virtualDisk* disk, int record, char *data){
         return; 
     }
 
-    /* Check correct record/track from user */
-    if (record<0 || record>= disk->totalRecords)
-    {
-        printf("Invalid track selected, you have to choose between 0 and %d \n", disk->totalRecords-1);
-        /* Close file */
-        fclose(disk->pFile); 
-    }
-
     /* Move to track position = record* record_size from the beginning of the file */
     fseek(disk->pFile,record * disk->recordSize,SEEK_SET);
-    
     /* Empty buffer */
     char buffer[RECORD_SIZE] = {0}; 
     /* 
@@ -220,7 +229,6 @@ void writeRecord(virtualDisk* disk, int record, char *data){
     * strncpy(char *restrict dst, const char *restrict src, size_t dsize)
     */
     strncpy(buffer,data,disk->recordSize-1); 
-
     /* write buffer into file */
     fwrite(buffer,sizeof(char),disk->recordSize, disk->pFile); 
     /* Notify ! */
@@ -250,29 +258,26 @@ void readRecord(virtualDisk* disk, int record){
         return; 
     }
 
-     /* Check correct record/track from user */
-    if (record<0 || record>= disk->totalRecords)
-    {
-        printf("Invalid track selected, you have to choose between 0 and %d \n", disk->totalRecords-1);
-         /* Close file */
-        fclose(disk->pFile); 
-    }
-
     /* Move to track position = record* record_size from the beginning of the file */
     fseek(disk->pFile,record * disk->recordSize,SEEK_SET);
-
     /* Empty buffer */
     char buffer[RECORD_SIZE] = {0}; 
-
     /* read from file and save into buffer var*/
     fread(buffer, sizeof(char), disk->recordSize, disk->pFile); 
-
     /* Notify ! */
     printf("Data read from track %d -> %s \n", record, buffer); 
     /* Always close the file after operation */
     fclose(disk->pFile);
 }
 
+/*
+* Function name     : isValidRecord
+* Arguments         : virtualDisk*   = Pointer to the virtual disk data structure
+*                     int            = Record index to read the data from
+* Return value/s    : int            = Returns 1 if the record index is valid, 0 if it is out of range.
+* Remarks           : Checks if the given record index falls within the valid range (0 to totalRecords - 1).
+*                     If the index is out of range, an error message is displayed, and 0 is returned.
+*/
 int isValidRecord(virtualDisk* disk,int record){
 
     if (record <0 || record>disk->totalRecords-1)
@@ -280,7 +285,83 @@ int isValidRecord(virtualDisk* disk,int record){
         printf("Wrong track requested. Virtual disk goes from track 0 to track %d\n ", disk->totalRecords-1);
         return 0; 
     }
-    
     return 1; 
+}
 
+/*
+* Function name     : isTrackEmpty
+* Arguments         : virtualDisk*   = Pointer to the virtual disk data structure
+*                     int            = Record index to read the data from
+* Return value/s    : int            = Returns 1 if the track is empty, 0 if it contains data, and -1 on file access error.
+* Remarks           : Opens the disk file with "r+b" option, moves to the specified track using fseek(), 
+*                     reads the data into a buffer, and checks if all bytes are zero.
+*                     If a track/record contains data the function return 0
+*/
+int isTrackEmpty(virtualDisk* disk, int record) {
+    disk->pFile = fopen(disk->name, READ_BIN);
+    if (!disk->pFile) {
+        perror("Error opening disk file \n");
+        return -1; 
+    }
+
+    /* Move to the correct track */
+    fseek(disk->pFile, record * disk->recordSize, SEEK_SET);
+    /* Read the data */
+    char buffer[RECORD_SIZE] = {0};
+    fread(buffer, sizeof(char), disk->recordSize, disk->pFile);
+    /* Always close the file after operation */
+    fclose(disk->pFile);
+
+    /* Check if all bytes are zero */
+    for (int i = 0; i < disk->recordSize; i++) {
+        if (buffer[i] != 0) {
+            return 0; // Not empty
+        }
+    }
+    return 1; // Empty track
+}
+
+/*
+* Function name     : checkDiskInfo
+* Arguments         : virtualDisk*   = Pointer to the virtual disk data structure
+* Return value/s    : void           = Does not return any value.
+* Remarks           : This function retrieves and displays the information about the virtual disk file.
+*                     - The function displays the following disk information:
+*                       - Disk file size (in bytes).
+*                       - Total number of records (tracks).
+*                       - Number of occupied tracks.
+*                       - Number of free tracks.
+*/
+void checkDiskInfo(virtualDisk* disk){
+    disk->pFile = fopen(disk->name,READ_BIN); 
+
+    if (!disk->pFile)
+    {
+        perror("Error opening disk file \n");
+        return; 
+    }
+
+    /* Get file size */
+    fseek(disk->pFile,0,SEEK_END); 
+    long fileSize = ftell(disk->pFile); 
+    /* Always close the file after operation */
+    fclose(disk->pFile); 
+
+    /* Check occupied tracks */
+    int occupiedTracks = 0; 
+    for (int i = 0; i < disk->totalRecords; i++)
+    {
+        if (!isTrackEmpty(disk,i))
+        {
+            occupiedTracks ++; 
+        }
+    }
+    
+    /* Notify ! */
+    printf("\nDisk info:\n"
+            "File disk size: %ld bytes \n"
+            "Total tracks: %d\n"
+            "Occupied tracks on disk: %d \n"
+            "Free tracks on disk: %d\n",fileSize,disk->totalRecords,occupiedTracks,disk->totalRecords-occupiedTracks
+    );
 }
