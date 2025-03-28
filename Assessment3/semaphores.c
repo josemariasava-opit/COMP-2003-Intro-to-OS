@@ -69,6 +69,12 @@ int main(){
     for (int i = 1; i <= 3; i++)
     {
         dataThread *data = malloc(sizeof(dataThread)); 
+        if (!data)
+        {
+            perror("Memory allocation failed");
+            exit(EXIT_FAILURE); 
+        }
+        
         data->sharedVar = &sharedVariable; 
         data->semaphore = &semaphore; 
         data->threadId = i; 
@@ -88,7 +94,7 @@ int main(){
     }    
     
     /* Notify final value */
-    printf("Final value of shared variable is: %d ", sharedVariable); 
+    printf("Final value of shared variable is: %d\n", sharedVariable); 
 
     /* Destroy semaphore */
     sem_destroy(&semaphore); 

@@ -3,6 +3,7 @@
     "files.associations": {
         "stdio.h": "c",
         "stdlib.h": "c",
-        "pthread.h": "c"
+        "pthread.h": "c",
+        "string.h": "c"
     }
 }

@@ -48,6 +48,12 @@ int main(){
     for (int i = 1; i <= 3; i++)
     {
         dataThread *data = malloc(sizeof(dataThread)); 
+        if (!data)
+        {
+            perror("Memory allocation failed");
+            exit(EXIT_FAILURE); 
+        }
+        /* Init struct */
         data->sharedVar = &sharedVariable; 
         data->lock = &lock; 
         data->threadId = i; 
@@ -56,6 +62,8 @@ int main(){
         if (pthread_create(&threads[i-1], NULL, sharedResource, (void *)data)!= 0)
         {
             perror("Failed to create thread"); 
+            /* fix - free the memory in case of fail*/
+            free(data); 
             return 1;
         }
     }
@@ -67,7 +75,7 @@ int main(){
     }
     
     /* Notify final value */
-    printf("Final value of shared variable is: %d ", sharedVariable); 
+    printf("Final value of shared variable is: %d\n", sharedVariable); 
     
     /* Destroy mutex */
     pthread_mutex_destroy(&lock); 
